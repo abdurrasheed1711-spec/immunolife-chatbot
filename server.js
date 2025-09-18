@@ -1,10 +1,16 @@
 const express = require("express");
+const path = require("path");
 const app = express();
 
 // Middleware to parse JSON requests
 app.use(express.json());
 
-// Simple chatbot endpoint
+// Serve index.html at the root
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// Chat endpoint
 app.post("/chat", (req, res) => {
   const userMessage = req.body.message || "";
 
@@ -21,12 +27,10 @@ app.post("/chat", (req, res) => {
   res.json({ reply: botReply });
 });
 
-// Default homepage
-app.get("/", (req, res) => {
-  res.send("✅ ImmunoLife Chatbot is running!");
-});
+// Serve static files if needed
+app.use(express.static(path.join(__dirname, "public")));
 
-// Railway will set the PORT automatically
+// Use the port from Render or fallback to 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Chatbot running on port ${PORT}`);
